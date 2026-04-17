@@ -344,33 +344,33 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-bg/70 via-bg/40 to-bg/85" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-gold/[0.06] rounded-full blur-[120px]" />
       </div>
-      <Reveal mountAnim>
+      <Reveal mountAnim className="relative z-10">
         <img
           src="/bisso-logo.png"
           alt="Bisso Bar y Brasas"
           className="w-44 h-44 sm:w-56 sm:h-56 mb-8 drop-shadow-2xl rounded-full object-cover mx-auto"
         />
       </Reveal>
-      <Reveal delay={0.15} mountAnim>
+      <Reveal delay={0.15} mountAnim className="relative z-10">
         <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-gold-light tracking-wide mb-4">Bisso</h1>
       </Reveal>
-      <Reveal delay={0.25} mountAnim>
+      <Reveal delay={0.25} mountAnim className="relative z-10">
         <p className="text-sm sm:text-base tracking-[0.35em] uppercase text-white/40 mb-3 font-light">Bar y Brasas</p>
       </Reveal>
-      <Reveal delay={0.35} mountAnim>
+      <Reveal delay={0.35} mountAnim className="relative z-10">
         <div className="flex items-center justify-center gap-2 mb-10">
           <Stars count={5} />
           <span className="text-gold-light font-semibold text-sm">{GOOGLE_RATING}</span>
           <span className="text-white/30 text-xs">({GOOGLE_REVIEWS_COUNT} reseñas en Google)</span>
         </div>
       </Reveal>
-      <Reveal delay={0.45} mountAnim>
+      <Reveal delay={0.45} mountAnim className="relative z-10">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <a href={`tel:${PHONE}`} className="rounded-full px-8 py-3.5 bg-gold text-bg text-sm font-semibold tracking-wider hover:bg-gold-light active:scale-95 transition-all">Reservar mesa</a>
           <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="rounded-full px-8 py-3.5 border border-gold/30 text-gold text-sm font-semibold tracking-wider hover:border-gold/60 hover:text-gold-light active:scale-95 transition-all">Síguenos en Instagram</a>
         </div>
       </Reveal>
-      <Reveal delay={0.65} mountAnim>
+      <Reveal delay={0.65} mountAnim className="relative z-10">
         <a href="#galeria" className="mt-14 sm:mt-20 flex flex-col items-center gap-2 text-[10px] font-semibold tracking-[0.3em] uppercase text-white/30 hover:text-gold/60 transition-colors">
           <span>Descubre más</span>
           <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce"><path d="M4 7l5 5 5-5" /></svg>
