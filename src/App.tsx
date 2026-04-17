@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 
 const PHONE = "865302851";
 const INSTAGRAM = "https://www.instagram.com/bisso.barybrasas";
@@ -6,7 +7,43 @@ const MAPS_QUERY = "Bisso+Bar+Brasa+y+Leña+El+Altet";
 const GOOGLE_RATING = 4.8;
 const GOOGLE_REVIEWS_COUNT = 52;
 
-/* ── Reviews (best from Google) ───────────────────────────────── */
+/* ── Scroll reveal ────────────────────────────────────────────── */
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 48 },
+  visible: (delay: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const, delay },
+  }),
+};
+
+function Reveal({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      variants={fadeUp}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      custom={delay}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── Reviews ──────────────────────────────────────────────────── */
 
 type Review = { name: string; text: string; stars: number };
 
@@ -227,7 +264,7 @@ const FOOD_IMAGES = Array.from({ length: 8 }, (_, i) => `/images/food-${i + 1}.p
 const NAV_LINKS = [
   { label: "Carta", href: "#carta" },
   { label: "Vinos", href: "#vinos" },
-  { label: "Horario", href: "#horario" },
+  { label: "Nosotros", href: "#nosotros" },
   { label: "Contacto", href: "#contacto" },
 ];
 
@@ -299,59 +336,71 @@ function Hero() {
     <section className="relative flex flex-col items-center justify-center min-h-[85vh] sm:min-h-screen px-5 pt-24 pb-16 text-center overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute inset-0 opacity-[0.18]"
-          style={{ backgroundImage: "url('/images/hero-bg.webp')", backgroundSize: "cover", backgroundPosition: "center", filter: "blur(28px)" }}
+          className="absolute inset-0 opacity-[0.3]"
+          style={{ backgroundImage: "url('/images/hero-bg.webp')", backgroundSize: "cover", backgroundPosition: "center", filter: "blur(14px)" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/80 via-bg/40 to-bg/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg/70 via-bg/40 to-bg/85" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-gold/[0.06] rounded-full blur-[120px]" />
       </div>
-      <img
-        src="/bisso-logo.png"
-        alt="Bisso Bar y Brasas"
-        className="relative z-10 w-44 h-44 sm:w-56 sm:h-56 mb-8 drop-shadow-2xl rounded-full object-cover"
-      />
-      <h1 className="relative z-10 font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-gold-light tracking-wide mb-4">
-        Bisso
-      </h1>
-      <p className="relative z-10 text-sm sm:text-base tracking-[0.35em] uppercase text-white/40 mb-3 font-light">
-        Bar y Brasas
-      </p>
-      <div className="relative z-10 flex items-center gap-2 mb-10">
-        <Stars count={5} />
-        <span className="text-gold-light font-semibold text-sm">{GOOGLE_RATING}</span>
-        <span className="text-white/30 text-xs">({GOOGLE_REVIEWS_COUNT} reseñas en Google)</span>
-      </div>
-      <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3">
-        <a href={`tel:${PHONE}`} className="rounded-full px-8 py-3.5 bg-gold text-bg text-sm font-semibold tracking-wider hover:bg-gold-light active:scale-95 transition-all">Reservar mesa</a>
-        <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="rounded-full px-8 py-3.5 border border-gold/30 text-gold text-sm font-semibold tracking-wider hover:border-gold/60 hover:text-gold-light active:scale-95 transition-all">Síguenos en Instagram</a>
-      </div>
-      <a href="#galeria" className="relative z-10 mt-14 sm:mt-20 flex flex-col items-center gap-2 text-[10px] font-semibold tracking-[0.3em] uppercase text-white/30 hover:text-gold/60 transition-colors">
-        <span>Descubre más</span>
-        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce"><path d="M4 7l5 5 5-5" /></svg>
-      </a>
+      <Reveal>
+        <img
+          src="/bisso-logo.png"
+          alt="Bisso Bar y Brasas"
+          className="w-44 h-44 sm:w-56 sm:h-56 mb-8 drop-shadow-2xl rounded-full object-cover mx-auto"
+        />
+      </Reveal>
+      <Reveal delay={0.15}>
+        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-gold-light tracking-wide mb-4">Bisso</h1>
+      </Reveal>
+      <Reveal delay={0.25}>
+        <p className="text-sm sm:text-base tracking-[0.35em] uppercase text-white/40 mb-3 font-light">Bar y Brasas</p>
+      </Reveal>
+      <Reveal delay={0.35}>
+        <div className="flex items-center justify-center gap-2 mb-10">
+          <Stars count={5} />
+          <span className="text-gold-light font-semibold text-sm">{GOOGLE_RATING}</span>
+          <span className="text-white/30 text-xs">({GOOGLE_REVIEWS_COUNT} reseñas en Google)</span>
+        </div>
+      </Reveal>
+      <Reveal delay={0.45}>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href={`tel:${PHONE}`} className="rounded-full px-8 py-3.5 bg-gold text-bg text-sm font-semibold tracking-wider hover:bg-gold-light active:scale-95 transition-all">Reservar mesa</a>
+          <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="rounded-full px-8 py-3.5 border border-gold/30 text-gold text-sm font-semibold tracking-wider hover:border-gold/60 hover:text-gold-light active:scale-95 transition-all">Síguenos en Instagram</a>
+        </div>
+      </Reveal>
+      <Reveal delay={0.65}>
+        <a href="#galeria" className="mt-14 sm:mt-20 flex flex-col items-center gap-2 text-[10px] font-semibold tracking-[0.3em] uppercase text-white/30 hover:text-gold/60 transition-colors">
+          <span>Descubre más</span>
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce"><path d="M4 7l5 5 5-5" /></svg>
+        </a>
+      </Reveal>
     </section>
   );
 }
 
 function FoodGallery() {
   return (
-    <section id="galeria" className="bg-bg-card py-16 sm:py-24 px-5">
+    <section id="galeria" className="bg-bg-grey py-16 sm:py-24 px-5">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Nuestros platos</span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-gold-light mt-3">Hecho a las brasas</h2>
-        </div>
+        <Reveal>
+          <div className="text-center mb-12">
+            <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Nuestros platos</span>
+            <h2 className="font-serif text-3xl sm:text-4xl text-gold-light mt-3">Hecho a las brasas</h2>
+          </div>
+        </Reveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {FOOD_IMAGES.map((src, i) => (
-            <div key={i} className="relative overflow-hidden rounded-xl aspect-square group cursor-pointer">
-              <img
-                src={src}
-                alt={`Plato ${i + 1}`}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
+            <Reveal key={i} delay={i * 0.06}>
+              <div className="relative overflow-hidden rounded-xl aspect-square group cursor-pointer">
+                <img
+                  src={src}
+                  alt={`Plato ${i + 1}`}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -363,9 +412,7 @@ function ReviewCard({ review }: { review: Review }) {
   return (
     <div className="shrink-0 w-[320px] sm:w-[380px] bg-bg-card border border-gold/10 rounded-2xl p-6 mx-2">
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center text-gold font-semibold text-sm">
-          {review.name[0]}
-        </div>
+        <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center text-gold font-semibold text-sm">{review.name[0]}</div>
         <div>
           <p className="text-sm font-medium text-white/80">{review.name}</p>
           <Stars count={review.stars} />
@@ -379,15 +426,17 @@ function ReviewCard({ review }: { review: Review }) {
 function ReviewsCarousel() {
   return (
     <section className="bg-bg py-16 sm:py-24 overflow-hidden">
-      <div className="text-center mb-12 px-5">
-        <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Lo que dicen nuestros clientes</span>
-        <h2 className="font-serif text-3xl sm:text-4xl text-gold-light mt-3 mb-3">Reseñas en Google</h2>
-        <div className="flex items-center justify-center gap-3">
-          <Stars count={5} />
-          <span className="text-gold-light font-serif text-2xl">{GOOGLE_RATING}</span>
-          <span className="text-white/30 text-sm">/5 — {GOOGLE_REVIEWS_COUNT} reseñas</span>
+      <Reveal>
+        <div className="text-center mb-12 px-5">
+          <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Lo que dicen nuestros clientes</span>
+          <h2 className="font-serif text-3xl sm:text-4xl text-gold-light mt-3 mb-3">Reseñas en Google</h2>
+          <div className="flex items-center justify-center gap-3">
+            <Stars count={5} />
+            <span className="text-gold-light font-serif text-2xl">{GOOGLE_RATING}</span>
+            <span className="text-white/30 text-sm">/5 — {GOOGLE_REVIEWS_COUNT} reseñas</span>
+          </div>
         </div>
-      </div>
+      </Reveal>
       <div className="space-y-4">
         <div className="carousel-left flex w-max">
           {[...ROW1, ...ROW1].map((r, i) => <ReviewCard key={`r1-${i}`} review={r} />)}
@@ -402,35 +451,41 @@ function ReviewsCarousel() {
 
 function SobreNosotros() {
   return (
-    <section className="bg-bg-card py-20 sm:py-28 px-5">
+    <section id="nosotros" className="bg-bg-grey py-20 sm:py-28 px-5">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Conócenos</span>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Sobre Nosotros</h2>
-        </div>
+        <Reveal>
+          <div className="text-center mb-14">
+            <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Conócenos</span>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Sobre Nosotros</h2>
+          </div>
+        </Reveal>
         <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-          <div className="space-y-6">
-            <p className="text-base sm:text-lg text-white/60 leading-relaxed">
-              En <span className="text-gold font-medium">Bisso</span> fusionamos la tradición argentina de las brasas con la calidez mediterránea. Nuestras carnes se cocinan a fuego lento sobre leña y carbón, respetando los tiempos de cada corte para lograr el sabor y la textura perfectos.
-            </p>
-            <p className="text-base sm:text-lg text-white/60 leading-relaxed">
-              Somos una familia apasionada por la buena gastronomía. Desde los desayunos hasta las cenas, cada plato sale de nuestra cocina con el mismo cariño y dedicación. Nuestro objetivo es que te sientas como en casa, disfrutando de producto de calidad en un ambiente cercano y acogedor.
-            </p>
-            <p className="text-base sm:text-lg text-white/60 leading-relaxed">
-              Ubicados en El Altet, te invitamos a descubrir el auténtico sabor de las brasas. Ven a visitarnos — tu mesa te espera.
-            </p>
-          </div>
-          <div className="relative rounded-2xl overflow-hidden aspect-[3/4] md:aspect-auto md:h-full md:min-h-[460px] group">
-            <img
-              src="/images/team.png"
-              alt="El equipo de Bisso"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6">
-              <p className="text-xs font-semibold tracking-[0.25em] uppercase text-gold/80">Familia Bisso</p>
+          <Reveal delay={0.1}>
+            <div className="space-y-6">
+              <p className="text-base sm:text-lg text-white/60 leading-relaxed">
+                En <span className="text-gold font-medium">Bisso</span> fusionamos la tradición argentina de las brasas con la calidez mediterránea. Nuestras carnes se cocinan a fuego lento sobre leña y carbón, respetando los tiempos de cada corte para lograr el sabor y la textura perfectos.
+              </p>
+              <p className="text-base sm:text-lg text-white/60 leading-relaxed">
+                Somos una familia apasionada por la buena gastronomía. Desde los desayunos hasta las cenas, cada plato sale de nuestra cocina con el mismo cariño y dedicación. Nuestro objetivo es que te sientas como en casa, disfrutando de producto de calidad en un ambiente cercano y acogedor.
+              </p>
+              <p className="text-base sm:text-lg text-white/60 leading-relaxed">
+                Ubicados en El Altet, te invitamos a descubrir el auténtico sabor de las brasas. Ven a visitarnos — tu mesa te espera.
+              </p>
             </div>
-          </div>
+          </Reveal>
+          <Reveal delay={0.25}>
+            <div className="relative rounded-2xl overflow-hidden aspect-[3/4] md:aspect-auto md:h-full md:min-h-[460px] group">
+              <img
+                src="/images/team.png"
+                alt="El equipo de Bisso"
+                className="absolute inset-0 w-full h-full object-cover object-[center_25%] transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <p className="text-xs font-semibold tracking-[0.25em] uppercase text-gold/80">Familia Bisso</p>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -455,24 +510,28 @@ function MenuSection({ section }: { section: Section }) {
 
 function Carta() {
   return (
-    <section id="carta" className="bg-bg py-20 sm:py-28 px-5">
+    <section id="carta" className="bg-bg-card py-20 sm:py-28 px-5">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Nuestra carta</span>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Tostadas, Tapas &amp; Platos</h2>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-4">
-          <div>
-            {MENU_CARTA.slice(0, 3).map((s) => <MenuSection key={s.title} section={s} />)}
+        <Reveal>
+          <div className="text-center mb-14">
+            <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Nuestra carta</span>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Tostadas, Tapas &amp; Platos</h2>
           </div>
-          <div>
-            {MENU_CARTA.slice(3, 6).map((s) => <MenuSection key={s.title} section={s} />)}
+        </Reveal>
+        <Reveal delay={0.15}>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-4">
+            <div>
+              {MENU_CARTA.slice(0, 3).map((s) => <MenuSection key={s.title} section={s} />)}
+            </div>
+            <div>
+              {MENU_CARTA.slice(3, 6).map((s) => <MenuSection key={s.title} section={s} />)}
+            </div>
+            <div className="md:col-span-2 lg:col-span-1">
+              {MENU_CARTA.slice(6).map((s) => <MenuSection key={s.title} section={s} />)}
+              {MENU_POSTRES_BEBIDAS.map((s) => <MenuSection key={s.title} section={s} />)}
+            </div>
           </div>
-          <div className="md:col-span-2 lg:col-span-1">
-            {MENU_CARTA.slice(6).map((s) => <MenuSection key={s.title} section={s} />)}
-            {MENU_POSTRES_BEBIDAS.map((s) => <MenuSection key={s.title} section={s} />)}
-          </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -480,80 +539,82 @@ function Carta() {
 
 function VinosSection() {
   return (
-    <section id="vinos" className="bg-bg-card py-20 sm:py-28 px-5">
+    <section id="vinos" className="bg-bg-grey py-20 sm:py-28 px-5">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Selección</span>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Vinos y Más</h2>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-4">
-          <div>
-            {VINOS.slice(0, 2).map((s) => <MenuSection key={s.title} section={s} />)}
+        <Reveal>
+          <div className="text-center mb-14">
+            <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Selección</span>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Vinos y Más</h2>
           </div>
-          <div>
-            <MenuSection section={VINOS[2]} />
-            <MenuSection section={VINOS[3]} />
-          </div>
-          <div className="md:col-span-2 lg:col-span-1">
-            <MenuSection section={VINOS[4]} />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Horario() {
-  return (
-    <section id="horario" className="bg-bg py-20 sm:py-28 px-5">
-      <div className="max-w-2xl mx-auto text-center">
-        <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Cuándo visitarnos</span>
-        <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3 mb-12">Horario</h2>
-        <div className="bg-bg-card rounded-2xl border border-gold/10 p-8 sm:p-10 space-y-6">
-          <p className="font-serif text-2xl sm:text-3xl text-gold-light">8:00 — 00:00</p>
-          <div className="space-y-3 text-sm sm:text-base text-white/60">
-            <p><span className="text-gold font-medium">Desayunos</span> — 8:00 a 12:00</p>
-            <p><span className="text-gold font-medium">Comidas</span> — 12:00 a 15:30</p>
-            <p><span className="text-gold font-medium">Cenas</span> — 20:00 a 23:00</p>
-          </div>
-          <div className="pt-4 border-t border-gold/10">
-            <p className="text-sm text-white/40 tracking-wider uppercase">Martes cerrado</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Contacto() {
-  return (
-    <section id="contacto" className="bg-bg-card py-20 sm:py-28 px-5">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Encuéntranos</span>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Contacto</h2>
-        </div>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-bg rounded-2xl border border-gold/10 p-8 flex flex-col items-center justify-center text-center gap-6">
-            <p className="text-sm text-white/40 tracking-wider uppercase">Reservas</p>
-            <a href={`tel:${PHONE}`} className="font-serif text-3xl sm:text-4xl text-gold-light hover:text-gold transition-colors">
-              {PHONE.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}
-            </a>
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <a href={`tel:${PHONE}`} className="flex-1 rounded-full py-3 bg-gold text-bg text-sm font-semibold tracking-wider text-center hover:bg-gold-light transition-colors">Llamar</a>
-              <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex-1 rounded-full py-3 border border-gold/30 text-gold text-sm font-semibold tracking-wider text-center hover:border-gold/60 transition-colors">Instagram</a>
+        </Reveal>
+        <Reveal delay={0.15}>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-4">
+            <div>
+              {VINOS.slice(0, 2).map((s) => <MenuSection key={s.title} section={s} />)}
+            </div>
+            <div>
+              <MenuSection section={VINOS[2]} />
+              <MenuSection section={VINOS[3]} />
+            </div>
+            <div className="md:col-span-2 lg:col-span-1">
+              <MenuSection section={VINOS[4]} />
             </div>
           </div>
-          <div className="rounded-2xl overflow-hidden border border-gold/10 min-h-[300px]">
-            <iframe
-              title="Ubicación Bisso Bar"
-              src={`https://www.google.com/maps?q=${MAPS_QUERY}&output=embed`}
-              className="w-full h-full min-h-[300px]"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(0.95) contrast(0.9)" }}
-            />
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function ContactoHorario() {
+  return (
+    <section id="contacto" className="bg-bg-card py-20 sm:py-28 px-5">
+      <div className="max-w-6xl mx-auto">
+        <Reveal>
+          <div className="text-center mb-14">
+            <span className="text-xs font-semibold tracking-[0.3em] uppercase text-gold/60">Visítanos</span>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-light mt-3">Contacto &amp; Horario</h2>
           </div>
+        </Reveal>
+        <div className="grid md:grid-cols-3 gap-6">
+          <Reveal delay={0.1}>
+            <div className="bg-bg rounded-2xl border border-gold/10 p-8 flex flex-col items-center justify-center text-center gap-5 h-full">
+              <p className="text-sm text-white/40 tracking-wider uppercase">Reservas</p>
+              <a href={`tel:${PHONE}`} className="font-serif text-2xl sm:text-3xl text-gold-light hover:text-gold transition-colors">
+                {PHONE.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}
+              </a>
+              <div className="flex flex-col gap-2.5 w-full">
+                <a href={`tel:${PHONE}`} className="rounded-full py-3 bg-gold text-bg text-sm font-semibold tracking-wider text-center hover:bg-gold-light transition-colors">Llamar</a>
+                <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="rounded-full py-3 border border-gold/30 text-gold text-sm font-semibold tracking-wider text-center hover:border-gold/60 transition-colors">Instagram</a>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <div className="bg-bg rounded-2xl border border-gold/10 p-8 flex flex-col items-center justify-center text-center gap-5 h-full">
+              <p className="text-sm text-white/40 tracking-wider uppercase">Horario</p>
+              <p className="font-serif text-2xl sm:text-3xl text-gold-light">8:00 — 00:00</p>
+              <div className="space-y-2 text-sm text-white/60">
+                <p><span className="text-gold font-medium">Desayunos</span> — 8:00 a 12:00</p>
+                <p><span className="text-gold font-medium">Comidas</span> — 12:00 a 15:30</p>
+                <p><span className="text-gold font-medium">Cenas</span> — 20:00 a 23:00</p>
+              </div>
+              <div className="pt-3 border-t border-gold/10 w-full">
+                <p className="text-xs text-white/40 tracking-wider uppercase">Martes cerrado</p>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal delay={0.3}>
+            <div className="rounded-2xl overflow-hidden border border-gold/10 min-h-[300px] h-full">
+              <iframe
+                title="Ubicación Bisso Bar"
+                src={`https://www.google.com/maps?q=${MAPS_QUERY}&output=embed`}
+                className="w-full h-full min-h-[300px]"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(0.95) contrast(0.9)" }}
+              />
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -562,7 +623,7 @@ function Contacto() {
 
 function Footer() {
   return (
-    <footer className="bg-bg border-t border-gold/10 py-10 px-5">
+    <footer className="bg-bg-grey border-t border-gold/10 py-10 px-5">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <img src="/bisso-logo.png" alt="Bisso" className="h-8 w-8 rounded-full object-cover opacity-70" />
@@ -589,8 +650,7 @@ export default function App() {
       <SobreNosotros />
       <Carta />
       <VinosSection />
-      <Horario />
-      <Contacto />
+      <ContactoHorario />
       <Footer />
     </div>
   );
