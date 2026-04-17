@@ -32,3 +32,23 @@ html {
   background: rgba(201, 169, 110, 0.3);
   color: #fff;
 }
+
+/* Infinite carousel */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.carousel-left {
+  animation: scroll-left 40s linear infinite;
+}
+.carousel-right {
+  animation: scroll-right 40s linear infinite;
+}
+.carousel-left:hover,
+.carousel-right:hover {
+  animation-play-state: paused;
+}
